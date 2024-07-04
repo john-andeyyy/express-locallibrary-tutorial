@@ -164,12 +164,31 @@ exports.book_create_post = [
 
 // Display book delete form on GET.
 exports.book_delete_get = asyncHandler(async (req, res, next) => {
-    res.send("NOT IMPLEMENTED: Book delete GET");
+    // res.send("NOT IMPLEMENTED: Book delete GEssT");
+    const [book] = await Promise.all([
+        Book.findById(req.params.id).exec(),
+    ]);
+
+    if (book === null) {
+        res.redirect("/catalog/books")
+    }
+    res.render("book_delete", {
+        title: "delete title",
+        book: book,
+    })
 });
 
 // Handle book delete on POST.
 exports.book_delete_post = asyncHandler(async (req, res, next) => {
-    res.send("NOT IMPLEMENTED: Book delete POST");
+    // res.send("NOT IMPLEMENTED: Book delete POST");
+
+    const [book] = await Promise.all([
+        Book.findById(req.params.id).exec(),
+    ])
+
+    await Book.findByIdAndDelete(req.body.bookid)
+    res.redirect("/catalog/books")
+
 });
 
 // Display book update form on GET.

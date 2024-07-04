@@ -87,13 +87,51 @@ exports.genre_create_post = [
 
 
 // Display Genre delete form on GET.
+
 exports.genre_delete_get = asyncHandler(async (req, res, next) => {
-    res.send("NOT IMPLEMENTED: Genre delete GET");
+    const [genre, allBook_genre] = await Promise.all([
+        Genre.findById(req.params.id).exec(),
+        Book.find({ genre: req.params.id }, "title summary").exec(),
+    ]);
+
+    if (genre === null) {
+        // No results.
+        res.redirect("/catalog/genre");
+    } else {
+        res.render("genre_delete", {
+            title: "Delete genre",
+            genre: genre,
+            allBook_genre: allBook_genre,
+        });
+    }
 });
 
 // Handle Genre delete on POST.
 exports.genre_delete_post = asyncHandler(async (req, res, next) => {
-    res.send("NOT IMPLEMENTED: Genre delete POST");
+    // res.send("NOT IMPLEMENTED: Genre delete POST");
+
+    // Get details of author and all their books (in parallel)
+    
+
+    const [genre, allBook_genre] = await Promise.all([
+        Genre.findById(req.params.id).exec(),
+        Book.find({ genre: req.params.id }, "title summary").exec(),
+    ]);
+
+    if (allBook_genre.length > 0) {
+        // Author has books. Render in same way as for GET route.
+        res.render("genre_delete", {
+            title: "Delete genre",
+            genre: genre,
+            allBook_genre: allBook_genre,
+        });
+        return;
+    } else {
+        await Genre.findByIdAndDelete(req.body.genreid);
+        res.redirect("/catalog/genres");
+        console.log(`as`);
+        
+    }
 });
 
 // Display Genre update form on GET.

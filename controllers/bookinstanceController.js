@@ -21,7 +21,6 @@ exports.bookinstance_list = asyncHandler(async (req, res, next) => {
 
 
 // Display detail page for a specific BookInstance.
-// Display detail page for a specific BookInstance.
 exports.bookinstance_detail = asyncHandler(async (req, res, next) => {
     const bookInstance = await BookInstance.findById(req.params.id)
         .populate("book")
@@ -39,6 +38,8 @@ exports.bookinstance_detail = asyncHandler(async (req, res, next) => {
         bookinstance: bookInstance,
     });
 });
+
+
 
 
 // Display BookInstance create form on GET.
@@ -101,12 +102,45 @@ exports.bookinstance_create_post = [
 
 // Display BookInstance delete form on GET.
 exports.bookinstance_delete_get = asyncHandler(async (req, res, next) => {
-    res.send("NOT IMPLEMENTED: BookInstance delete GET");
+    // res.send("NOT IMPLEMENTED: BookInstance delete GET");
+
+    const [Bookinstance] = await Promise.all([
+        BookInstance.findById(req.params.id).exec(),
+    ]);
+
+    if (Bookinstance === null) {
+        // No results.
+        res.redirect("/catalog/bookinstance");
+    }
+
+    res.render("bookinstance_delete", {
+        title: "Bookinstance delete",
+        Bookinstance: Bookinstance,
+        
+    });
 });
 
 // Handle BookInstance delete on POST.
 exports.bookinstance_delete_post = asyncHandler(async (req, res, next) => {
-    res.send("NOT IMPLEMENTED: BookInstance delete POST");
+    // res.send("NOT IMPLEMENTED: BookInstance delete POST");
+
+    const [Bookinstance] = await Promise.all([
+        BookInstance.findById(req.params.id).exec(),
+    ]);
+
+
+    if (Bookinstance.length > 0) {
+        res.render("Bookinstance_delete", {
+            title: "Delete Bookinstance",
+            author: author,
+        });
+        return;
+    } else {
+        await BookInstance.findByIdAndDelete(req.body.Bookinstanceid);
+        res.redirect("/catalog/bookinstances");
+    }
+
+
 });
 
 // Display BookInstance update form on GET.
